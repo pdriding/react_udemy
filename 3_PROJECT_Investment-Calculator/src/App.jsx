@@ -1,6 +1,6 @@
 import Header from "./components/Header";
 import UserInput from "./components/UserInput";
-import UserOutput from "./components/UserOutput";
+import Result from "./components/Result";
 import { useState } from "react";
 
 function App() {
@@ -14,10 +14,9 @@ function App() {
   const [invest, setInvest] = useState(STATE);
 
   function test(target, amount) {
-    setInvest((tenn) => ({ ...tenn, [target]: [amount] }));
-    console.log(55, invest);
+    setInvest((tenn) => ({ ...tenn, [target]: amount }));
   }
-  console.log(1);
+
   return (
     <>
       <Header />
@@ -29,7 +28,7 @@ function App() {
         duration={STATE.duration}
       />
 
-      <UserOutput test={invest} />
+      <Result test={invest} />
     </>
   );
 }
