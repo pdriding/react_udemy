@@ -39,8 +39,6 @@ export default function Result({ test }) {
 
   return (
     <>
-      <p>{test && test.initialValue}hi</p>
-
       <table id="result">
         <thead>
           <tr>

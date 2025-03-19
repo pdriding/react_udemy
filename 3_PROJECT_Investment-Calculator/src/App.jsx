@@ -13,6 +13,8 @@ function App() {
 
   const [invest, setInvest] = useState(STATE);
 
+  const isValid = invest.duration >= 0;
+
   function test(target, amount) {
     setInvest((tenn) => ({ ...tenn, [target]: amount }));
   }
@@ -27,8 +29,8 @@ function App() {
         expectedReturn={STATE.expectedReturn}
         duration={STATE.duration}
       />
-
-      <Result test={invest} />
+      {!isValid && <p>Please enter valid duration.</p>}
+      {isValid && <Result test={invest} />}
     </>
   );
 }
