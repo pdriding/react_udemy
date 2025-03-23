@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+@theme {
+  --light-brown: #121063;
+}
