@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  --light-brown: #121063;
+  --color-light-brown: #d2b48c;
+  --color-dark-brown: #6b4f4b;
 }
