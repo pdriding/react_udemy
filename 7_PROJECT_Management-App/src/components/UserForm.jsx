@@ -1,15 +1,12 @@
-import { useState, useRef } from "react";
-import StartScreen from "./StartScreen";
-
-export default function CoreScreen({
-  startScreenRef,
+export default function UserForm({
   userFormRef,
   setProject,
+  setShowForm,
+  setShowStart,
 }) {
-  function toggleForm() {
-    userFormRef.current.reset();
-    startScreenRef.current.classList.toggle("hidden");
-    userFormRef.current.classList.toggle("hidden");
+  function hideForm() {
+    setShowForm(false);
+    setShowStart(true);
   }
 
   function handleSubmission(e) {
@@ -18,9 +15,8 @@ export default function CoreScreen({
     const formData = new FormData(userFormRef.current);
 
     const formTitle = formData.get("title");
-    const formDescription = formData.get("title");
-    const formDate = formData.get("title");
-    console.log(formTitle, formDescription, formDate);
+    const formDescription = formData.get("description");
+    const formDate = formData.get("due-date");
 
     setProject((project) => [
       ...project,
@@ -32,17 +28,16 @@ export default function CoreScreen({
       },
     ]);
 
-    toggleForm();
+    hideForm();
   }
-
   return (
     <div>
       {/* <StartScreen startScreenRef={startScreenRef} toggleForm={toggleForm} /> */}
       <div id="user-form" className=" h-screen flex items-center">
-        <form ref={userFormRef} className="hidden w-full max-w-3xl p-16 ">
+        <form ref={userFormRef} className=" w-full max-w-3xl p-16 ">
           <div className="flex justify-end space-x-4 mt-4">
             <button
-              onClick={toggleForm}
+              onClick={hideForm}
               type="button"
               className="font-medium bg-white text-dark-brown py-2 px-5  text-light-brown hover:text-dark-brown transition"
             >

@@ -1,30 +1,47 @@
 import SideBar from "./components/SideBar";
-import CoreScreen from "./components/CoreScreen";
+import StartScreen from "./components/StartScreen";
+import UserForm from "./components/UserForm";
+import CurrentProject from "./components/CurrentProject";
 import { useRef, useState } from "react";
 
 function App() {
-  const startScreenRef = useRef(null);
   const userFormRef = useRef(null);
   const [projects, setProject] = useState([]);
+  // ----
+  const [showStart, setShowStart] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [showProject, setShowProject] = useState(false);
+  //----
+  const [currentProject, setCurrentProject] = useState();
 
-  function showP() {
-    console.log(projects);
-  }
   return (
     <>
       <div className="grid grid-cols-4 min-h-screen bg-white">
-        <SideBar
-          startScreenRef={startScreenRef}
-          userFormRef={userFormRef}
-          projects={projects}
-          setProject={setProject}
-        />
-        <CoreScreen
-          startScreenRef={startScreenRef}
-          userFormRef={userFormRef}
-          setProject={setProject}
-          test={showP}
-        />
+        <div className="col-span-1">
+          <SideBar
+            projects={projects}
+            setShowForm={setShowForm}
+            setShowStart={setShowStart}
+          />
+        </div>
+        <div className="col-span-3">
+          {showStart && (
+            <StartScreen
+              setShowForm={setShowForm}
+              setShowStart={setShowStart}
+            />
+          )}
+          {showForm && (
+            <UserForm
+              userFormRef={userFormRef}
+              setProject={setProject}
+              setShowForm={setShowForm}
+              setShowStart={setShowStart}
+            />
+          )}
+          // TODO
+          {showProject && <CurrentProject />}
+        </div>
       </div>
     </>
   );
