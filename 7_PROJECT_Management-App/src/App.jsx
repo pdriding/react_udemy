@@ -22,6 +22,8 @@ function App() {
             projects={projects}
             setShowForm={setShowForm}
             setShowStart={setShowStart}
+            setShowProject={setShowProject}
+            setCurrentProject={setCurrentProject}
           />
         </div>
         <div className="col-span-3">
@@ -39,8 +41,15 @@ function App() {
               setShowStart={setShowStart}
             />
           )}
-          // TODO
-          {showProject && <CurrentProject />}
+
+          {showProject && (
+            <CurrentProject
+              currentProject={currentProject}
+              setProject={setProject}
+              setCurrentProject={setCurrentProject}
+              projects={projects}
+            />
+          )}
         </div>
       </div>
     </>

@@ -1,7 +1,25 @@
-export default function SideBar({ projects, setShowForm, setShowStart }) {
+export default function SideBar({
+  projects,
+  setShowForm,
+  setShowStart,
+  setShowProject,
+  setCurrentProject,
+}) {
   function showForm() {
     setShowForm(true);
     setShowStart(false);
+    setShowProject(false);
+  }
+
+  function showCurrentProject() {
+    setShowForm(false);
+    setShowStart(false);
+    setShowProject(true);
+  }
+
+  function handleClick(curProj) {
+    setCurrentProject(curProj);
+    showCurrentProject();
   }
 
   return (
@@ -17,6 +35,7 @@ export default function SideBar({ projects, setShowForm, setShowStart }) {
         {projects.map((project, i) => (
           <button
             key={i}
+            onClick={() => handleClick(project)}
             className="text-left w-full bg-black text-light-brown px-1 py-1  hover:bg-gray-800"
           >
             {project.title}
