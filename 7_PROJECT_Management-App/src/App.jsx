@@ -48,6 +48,9 @@ function App() {
               setProject={setProject}
               setCurrentProject={setCurrentProject}
               projects={projects}
+              setShowForm={setShowForm}
+              setShowStart={setShowStart}
+              setShowProject={setShowProject}
             />
           )}
         </div>

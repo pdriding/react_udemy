@@ -2,79 +2,70 @@ import { useLayoutEffect, useState } from "react";
 
 export default function CurrentProject({
   currentProject,
+  setCurrentProject,
   setProject,
   projects,
+  setShowForm,
+  setShowStart,
+  setShowProject,
 }) {
-  // const [currentTasks, setCurrentTasks] = useState(currentProject.tasks);
   const [inputValue, setInputValue] = useState("");
-
-  // function addTasks(e) {
-  //   e.preventDefault();
-  //   setCurrentTasks((prevTasks) => {
-  //     const updatedTasks = [...prevTasks, inputValue];
-
-  //     // Update project state with new tasks
-  //     setCurrentProject((prevProject) => ({
-  //       ...prevProject,
-  //       tasks: updatedTasks,
-  //     }));
-
-  //     return updatedTasks;
-  //   });
-  // }
-
-  // function addTasks(e) {
-  //   e.preventDefault();
-
-  //   setCurrentProject((prevProject) => ({
-  //     ...prevProject,
-  //     tasks: updatedTasks,
-  //   }));
-  // }
-
-  // function addTasks(e) {
-  //   e.preventDefault();
-
-  //   setCurrentProject((prevProjects) => {
-  //     let prevProjTasks = prevProjects.tasks; // Declare the variable
-  //     let curTasks = [...prevProjTasks, inputValue];
-  //     return { ...prevProjects, tasks: curTasks }; // Return the updated state object
-  //   });
-  // }
-
-  // function addTasks(e) {
-  //   e.preventDefault();
-  //   console.log(777, projects);
-  //   // TODO USE A MAP INSTEAD TO MUTATE
-  //   setProject((prevProjects) => {
-  //     const test = Array.from(prevProjects);
-  //     const thisProj = test.find(
-  //       (project) => project.title === currentProject.title
-  //     );
-
-  //     thisProj.tasks.push(inputValue);
-  //     console.log(thisProj);
-
-  //     return prevProjects;
-  //   });
-  //   setInputValue("");
-  // }
 
   function addTasks(e) {
     e.preventDefault();
-    console.log(777, projects);
-    // TODO USE A MAP INSTEAD TO MUTATE
     setProject((prevProjects) => {
-      const test = prevProjects.map((proj) => {
+      const updatedProjects = prevProjects.map((proj) => {
         if (proj.title === currentProject.title) {
           return { ...proj, tasks: [...proj.tasks, inputValue] };
         }
         return proj;
       });
-      return test;
+      const updatedCurrentProject = updatedProjects.find(
+        (proj) => proj.title === currentProject.title
+      );
+
+      setCurrentProject(updatedCurrentProject);
+      return updatedProjects;
     });
-    console.log(77, currentProject, projects);
+
     setInputValue("");
+  }
+
+  console.log(99, currentProject, 88, projects);
+
+  function deleteTask(i, curTask) {
+    setProject((prevProjects) => {
+      const updatedProjects = prevProjects.map((proj) => {
+        if (proj.title === currentProject.title) {
+          const updatedTasks = currentProject.tasks.filter(
+            (task) => task !== curTask
+          );
+          return { ...proj, tasks: [...updatedTasks] };
+        }
+        return proj;
+      });
+      console.log(55, updatedProjects);
+      const updatedCurrentProject = updatedProjects.find(
+        (proj) => proj.title === currentProject.title
+      );
+
+      setCurrentProject(updatedCurrentProject);
+      return updatedProjects;
+    });
+    setInputValue("");
+  }
+
+  function showStartScreen() {
+    setShowForm(false);
+    setShowStart(true);
+    setShowProject(false);
+  }
+
+  function deleteProject() {
+    setProject((projects) =>
+      projects.filter((project) => project.title !== currentProject.title)
+    );
+    showStartScreen();
   }
 
   return (
@@ -82,7 +73,12 @@ export default function CurrentProject({
       <div className="p-6 pt-25 max-w-xl">
         <div className="flex justify-between items-start">
           <h1 className="text-5xl font-bold">{currentProject.title}</h1>
-          <button className="px-4 py-2 hover:text-light-brown">Cancel</button>
+          <button
+            onClick={deleteProject}
+            className="px-4 py-2 hover:text-light-brown"
+          >
+            Delete
+          </button>
         </div>
         <p className="text-gray-400 text-m mt-2">{currentProject.date}</p>
         <p className="mt-4 text-lg">{currentProject.description}</p>
@@ -114,10 +110,11 @@ export default function CurrentProject({
             {currentProject.tasks.map((curTask, i) => (
               <div
                 key={i}
+                id={i}
                 className="my-1 py-1 px-2 p flex items-center justify-between rounded-sm hover:bg-gray-300 "
               >
                 <li>{curTask}</li>
-                <button>Clear</button>
+                <button onClick={() => deleteTask(i, curTask)}>Clear</button>
               </div>
             ))}
           </ul>
