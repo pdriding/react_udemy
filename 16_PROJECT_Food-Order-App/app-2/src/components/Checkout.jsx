@@ -3,10 +3,28 @@ import Input from "./UI/Input";
 import CartContext from "../store/CartContext";
 import UserProgressContext from "../store/UserProgressContext";
 import Modal from "./modal";
+import useHttp from "../hooks/useHttp";
+import Error from "./Error";
+import Button from "./UI/Button";
+
+const requestConfig = {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
 
 export default function Checkout() {
   const cartCtx = useContext(CartContext);
   const userProgressCtx = useContext(UserProgressContext);
+
+  const {
+    data,
+    isLoading: isSending,
+    error,
+    sendRequest,
+    clearData,
+  } = useHttp("http://localhost:3000/orders", requestConfig);
 
   function calculateTotal() {
     const total = cartCtx.items.reduce((acc, cur) => {
@@ -18,42 +36,66 @@ export default function Checkout() {
 
   // -----------------------
 
-  async function checkoutAction(prevFormState, formData) {
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const street = formData.get("street");
-    const postCode = formData.get("postal-code");
-    const city = formData.get("city");
-
-    const order2 = {
-      order: {
-        customer: { name, email, street, ["postal-code"]: postCode, city },
-        items: cart,
-      },
-    };
-
-    await sendOrder(order2);
-
-    if (!order?.error?.message) {
-      orderSuccessPage();
-    }
-
-    return { errors: null };
-  }
-
-  const [formState, formAction, pending] = useActionState(checkoutAction, {
-    errors: null,
-  });
-
   function handleClose() {
     userProgressCtx.hideCheckout();
   }
+
+  function handleFinish() {
+    userProgressCtx.hideCheckout();
+    cartCtx.clearCart();
+    clearData();
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    const fd = new FormData(event.target);
+    const customerData = Object.fromEntries(fd.entries());
+
+    sendRequest(
+      JSON.stringify({
+        order: {
+          items: cartCtx.items,
+          customer: customerData,
+        },
+      })
+    );
+  }
+  let actions = (
+    <>
+      <button className="text-button" onClick={handleClose}>
+        Close
+      </button>
+      <button className="button">Submit Order</button>
+    </>
+  );
+
+  if (isSending) {
+    actions = <span>Sending order data...</span>;
+  }
+
+  if (data && !error) {
+    return (
+      <Modal
+        open={userProgressCtx.progress === "checkout"}
+        onClose={handleFinish}
+      >
+        <h2>Success...</h2>
+        <p className="modal-actions">
+          <Button onClick={handleFinish}>Okay</Button>
+        </p>
+      </Modal>
+    );
+  }
   return (
     <>
-      <Modal open={userProgressCtx.progress === "checkout"}>
+      <Modal
+        open={userProgressCtx.progress === "checkout"}
+        onClose={handleClose}
+      >
         <h2>Checkout</h2>
         <p>Your Tolal: {calculateTotal()}</p>
-        <form action={formAction}>
+        <form onSubmit={handleSubmit}>
           {/* Single-column controls */}
           <Input label="Full Name" type="text" id="name" />
 
@@ -63,7 +105,7 @@ export default function Checkout() {
               type="email"
               id="email"
               name="email"
-              defaultValue={formState.enteredValues?.email}
+              // defaultValue={formState.enteredValues?.email}
             />
           </div>
 
@@ -73,7 +115,7 @@ export default function Checkout() {
               type="text"
               id="street"
               name="street"
-              defaultValue={formState.enteredValues?.street}
+              // defaultValue={formState.enteredValues?.street}
             />
           </div>
 
@@ -83,9 +125,9 @@ export default function Checkout() {
               <label htmlFor="postalCode">Postal Code</label>
               <input
                 type="text"
-                id="postalCode"
+                id="postal-code"
                 name="postal-code"
-                defaultValue={formState.enteredValues?.postCode}
+                // defaultValue={formState.enteredValues?.postCode}
               />
             </div>
             <div className="control">
@@ -93,16 +135,9 @@ export default function Checkout() {
               <input type="text" id="city" name="city" />
             </div>
           </div>
-
+          {error && <Error title="Failed to submit..." message={error} />}
           {/* Submit button */}
-          <div className="modal-actions">
-            <button className="text-button" onClick={handleClose}>
-              Close
-            </button>
-            <button className="button" onClick={calculateTotal}>
-              Submit Order
-            </button>
-          </div>
+          <div className="modal-actions">{actions}</div>
         </form>
       </Modal>
     </>

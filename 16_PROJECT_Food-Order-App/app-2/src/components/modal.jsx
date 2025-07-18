@@ -15,34 +15,10 @@ function Modal({ open, children, className = "", onClose }) {
     }
   }, [open]);
 
-  // close on Escape
-  useEffect(() => {
-    function onKey(e) {
-      if (e.key === "Escape") onClose();
-    }
-    if (open) document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  // backdrop click only
-  const handleClickOutside = useCallback(
-    (e) => {
-      if (e.target === dialog.current) {
-        onClose();
-      }
-    },
-    [onClose]
-  );
-
   if (!open) return null;
 
   return createPortal(
-    <dialog
-      className={`modal ${className}`}
-      ref={dialog}
-      onClick={handleClickOutside}
-      onClose={onClose}
-    >
+    <dialog className={`modal ${className}`} ref={dialog} onClose={onClose}>
       {children}
     </dialog>,
     document.getElementById("modal")
