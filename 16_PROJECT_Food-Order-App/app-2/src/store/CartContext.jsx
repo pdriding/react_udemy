@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useEffect,
-  useState,
-  useCallback,
-  useReducer,
-} from "react";
+import { createContext, useState, useReducer } from "react";
 
 export const CartContext = createContext({
   items: [],
