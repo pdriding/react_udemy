@@ -1,10 +1,11 @@
 // src/pages/EventDetailsPage.js
-import { useLoaderData } from "react-router-dom";
+import { useRouteLoaderData, redirect } from "react-router-dom";
 import EventItem from "../components/EventItem";
 
 function EventDetailPage() {
-  const data = useLoaderData();
+  const data = useRouteLoaderData("event-detail");
   console.log(data);
+
   return (
     <>
       <EventItem event={data.event} />
@@ -14,15 +15,11 @@ function EventDetailPage() {
 
 export default EventDetailPage;
 
-// --------------------------------------------------
-// Note: The name here doesn’t strictly matter in v7,
-// but importing it as "loader" is conventional.
 export async function Loader({ params }) {
   const id = params.eventId;
   const response = await fetch(`http://localhost:8080/events/${id}`);
 
   if (!response.ok) {
-    // Throw a Response so RRD will render your errorElement
     throw new Response(
       JSON.stringify({
         message: "Could not fetch details for selected event.",
@@ -34,7 +31,24 @@ export async function Loader({ params }) {
     );
   }
 
-  // Happy path: extract JSON
-  const event = await response.json();
-  return { event };
+  const data = await response.json();
+  return data;
+}
+
+export async function action({ params, request }) {
+  const eventId = params.eventId;
+
+  const response = await fetch("http://localhost:8080/events/" + eventId, {
+    method: request.method,
+  });
+
+  if (!response.ok) {
+    throw new Response(
+      JSON.stringify({
+        message: "Could not delete event.",
+      })
+    );
+  }
+
+  return redirect("/events");
 }

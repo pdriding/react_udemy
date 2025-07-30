@@ -24,15 +24,18 @@ import HomePage from "./pages/HomePage";
 import EditEventPage from "./pages/EditEventPage";
 import EventDetailPage, {
   Loader as eventsDetailLoader,
+  action as deleteEventAction,
 } from "./pages/EventDetailsPage";
-import EventsPage, { Loader as eventsLoader } from "./pages/EventsPage";
+import EventsPage, { loader as eventsLoader } from "./pages/EventsPage";
 import NewEventPage from "./pages/NewEventPage";
 import RootLayout from "./pages/Root";
 import EventLayout from "./pages/EventLayout";
 import ErrorPage from "./pages/Error";
+import { action as manipulateEventAction } from "./components/EventForm";
+import NewsletterPage, { action as newsletterAction } from "./pages/Newsletter";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-const router = createBrowserRouter([
+const routes = [
   {
     path: "/",
     element: <RootLayout />,
@@ -50,16 +53,43 @@ const router = createBrowserRouter([
           },
           {
             path: ":eventId",
-            element: <EventDetailPage />,
+            id: "event-detail",
             loader: eventsDetailLoader,
+            children: [
+              {
+                index: true,
+                element: <EventDetailPage />,
+                action: deleteEventAction,
+              },
+              {
+                path: "edit",
+                element: <EditEventPage />,
+                action: manipulateEventAction,
+              },
+            ],
           },
-          { path: "new", element: <NewEventPage /> },
+          {
+            path: "new",
+            element: <NewEventPage />,
+            action: manipulateEventAction,
+          },
           { path: ":eventId/Edit", element: <EditEventPage /> },
         ],
       },
+      {
+        path: "newsletter",
+        element: <NewsletterPage />,
+        action: newsletterAction,
+      },
     ],
   },
-]);
+];
+
+const router = createBrowserRouter(routes, {
+  future: { v7_partialHydration: false },
+  hydrateFallbackElement: <h2>Loading…</h2>,
+});
+
 function App() {
   return <RouterProvider router={router} />;
 }
